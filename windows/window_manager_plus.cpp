@@ -71,12 +71,13 @@ int64_t WindowManagerPlus::createWindow(const std::vector<std::string>& args) {
   if (g_window_created_callback) {
     WindowManagerPlus::autoincrementId_++;
     auto windowId = WindowManagerPlus::autoincrementId_;
-    std::vector<std::string> v1 = {std::to_string(windowId)};
 
-    // add the windowId as first argument to command_line_arguments
     std::vector<std::string> dst;
-    std::merge(v1.begin(), v1.end(), args.begin(), args.end(),
-               std::back_inserter(dst));
+    // add the windowId as first argument to command_line_arguments
+    dst.push_back(std::to_string(windowId));
+    // add the other arguments to command_line_arguments after windowId
+    dst.insert(dst.end(), args.begin(), args.end());
+
     auto fWindow = g_window_created_callback(std::move(dst));
     WindowManagerPlus::windows_.insert({windowId, std::move(fWindow)});
     return windowId;
