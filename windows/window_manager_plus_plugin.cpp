@@ -134,30 +134,18 @@ WindowManagerPlusPlugin::WindowManagerPlusPlugin(
 }
 
 WindowManagerPlusPlugin::~WindowManagerPlusPlugin() {
-#ifndef NDEBUG
-  std::cout << "WindowManagerPlugin dealloc" << std::endl;
-#endif
   registrar->UnregisterTopLevelWindowProcDelegate(window_proc_id);
   window_manager->channel = nullptr;
 
   auto id = window_manager->id;
-  if (WindowManagerPlus::windowManagers_.find(id) !=
-      WindowManagerPlus::windowManagers_.end()) {
-    WindowManagerPlus::windowManagers_.erase(id);
-  }
-  if (WindowManagerPlus::windows_.find(id) !=
-      WindowManagerPlus::windows_.end()) {
-    WindowManagerPlus::windows_[id]->Destroy();
-    // calling WindowManager::windows_.erase(id); will cause a crash
-    std::thread([&]() {
-      std::this_thread::sleep_for(std::chrono::milliseconds(100));
-      threadMtx.lock();
-      if (WindowManagerPlus::windows_.find(id) !=
-          WindowManagerPlus::windows_.end()) {
-        WindowManagerPlus::windows_.erase(id);
-      }
-      threadMtx.unlock();
-    }).detach();
+
+  WindowManagerPlus::windowManagers_.erase(id);
+
+  auto it = WindowManagerPlus::windows_.find(id);
+  if (it != WindowManagerPlus::windows_.end()) {
+    auto window = it->second;
+    WindowManagerPlus::windows_.erase(it);
+    window->Destroy();
   }
 }
 

@@ -9,8 +9,8 @@
 #include <flutter/plugin_registrar_windows.h>
 #include <flutter/standard_method_codec.h>
 
-#include <codecvt>
 #include <dwmapi.h>
+#include <codecvt>
 #include <map>
 #include <memory>
 #include <sstream>
